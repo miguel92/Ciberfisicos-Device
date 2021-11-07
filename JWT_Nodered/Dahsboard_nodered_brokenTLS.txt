@@ -1,0 +1,437 @@
+[
+    {
+        "id": "c67ac5b5.234ba8",
+        "type": "tab",
+        "label": "Dashboard",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "b9dfb1ac.94175",
+        "type": "debug",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 290,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "70d730e7.4f12d",
+        "type": "function",
+        "z": "c67ac5b5.234ba8",
+        "name": "Temp",
+        "func": "\nmsg.payload = msg.payload.temp\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 520,
+        "wires": [
+            [
+                "a13f9416.4651e8"
+            ]
+        ]
+    },
+    {
+        "id": "e0681780.2b4688",
+        "type": "function",
+        "z": "c67ac5b5.234ba8",
+        "name": "Hum",
+        "func": "\nmsg.payload = msg.payload.hum\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 580,
+        "wires": [
+            [
+                "489e9e6a.2cb36"
+            ]
+        ]
+    },
+    {
+        "id": "83f35518.3d89e8",
+        "type": "mqtt in",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "topic": "cf/p1/datos",
+        "qos": "2",
+        "broker": "de9ae7a8.605698",
+        "x": 120,
+        "y": 240,
+        "wires": [
+            [
+                "c439fda7.518c7"
+            ]
+        ]
+    },
+    {
+        "id": "29d0adca.799352",
+        "type": "comment",
+        "z": "c67ac5b5.234ba8",
+        "name": "ESP32 envía los datos y su JWT",
+        "info": "",
+        "x": 190,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "c5b1268d.bfaa48",
+        "type": "jwt verify",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "alg": [
+            "HS256"
+        ],
+        "jwkurl": "",
+        "secret": "hola",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "payload",
+        "x": 730,
+        "y": 240,
+        "wires": [
+            [
+                "2e7625aa.cc394a"
+            ]
+        ]
+    },
+    {
+        "id": "cd4e69dc.e15e78",
+        "type": "debug",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 950,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "bf8307fb.a5ea98",
+        "type": "function",
+        "z": "c67ac5b5.234ba8",
+        "name": "hmac",
+        "func": "//Guardo los datos globales\nglobal.set('DHT11',msg.payload.DHT11);\n// Paso la hmac para que se analice\nmsg.payload = msg.payload.hmac;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 240,
+        "wires": [
+            [
+                "c5b1268d.bfaa48",
+                "5e487ab6.faea44"
+            ]
+        ]
+    },
+    {
+        "id": "c439fda7.518c7",
+        "type": "json",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 310,
+        "y": 240,
+        "wires": [
+            [
+                "bf8307fb.a5ea98",
+                "11ddf3a6.87620c"
+            ]
+        ]
+    },
+    {
+        "id": "11ddf3a6.87620c",
+        "type": "debug",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 330,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "695728a4.82b968",
+        "type": "inject",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "topic": "Prueba",
+        "payload": "{\"hola\":\"hola\"}",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 200,
+        "y": 1220,
+        "wires": [
+            [
+                "1da20b54.73d055"
+            ]
+        ]
+    },
+    {
+        "id": "1da20b54.73d055",
+        "type": "json",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 473.16675567626953,
+        "y": 1219.7332696914673,
+        "wires": [
+            [
+                "3b39405d.14ddb",
+                "8b34af9.83f395"
+            ]
+        ]
+    },
+    {
+        "id": "8b34af9.83f395",
+        "type": "mqtt out",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "topic": "cf/p1/datos",
+        "qos": "",
+        "retain": "",
+        "broker": "de9ae7a8.605698",
+        "x": 694.6003341674805,
+        "y": 1244.400001525879,
+        "wires": []
+    },
+    {
+        "id": "3b39405d.14ddb",
+        "type": "debug",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 635.1666946411133,
+        "y": 1144.7331714630127,
+        "wires": []
+    },
+    {
+        "id": "66c0f8ab.2f1688",
+        "type": "comment",
+        "z": "c67ac5b5.234ba8",
+        "name": "Prueba de envio de datos",
+        "info": "",
+        "x": 190,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "2e7625aa.cc394a",
+        "type": "function",
+        "z": "c67ac5b5.234ba8",
+        "name": "Datos globales",
+        "func": "var prueba=global.get('DHT11');\nmsg.payload=prueba;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 960,
+        "y": 240,
+        "wires": [
+            [
+                "cd4e69dc.e15e78",
+                "f08ba943.2eb198"
+            ]
+        ]
+    },
+    {
+        "id": "5e487ab6.faea44",
+        "type": "debug",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 550,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "f08ba943.2eb198",
+        "type": "link out",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "links": [
+            "82a1d11e.16693"
+        ],
+        "x": 1186.899983406067,
+        "y": 240.59979724884033,
+        "wires": []
+    },
+    {
+        "id": "82a1d11e.16693",
+        "type": "link in",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "links": [
+            "f08ba943.2eb198"
+        ],
+        "x": 74.83322525024414,
+        "y": 518.6665954589844,
+        "wires": [
+            [
+                "b9dfb1ac.94175",
+                "70d730e7.4f12d",
+                "e0681780.2b4688"
+            ]
+        ]
+    },
+    {
+        "id": "24a7f392.5f47cc",
+        "type": "comment",
+        "z": "c67ac5b5.234ba8",
+        "name": "Datos en el Dashboard",
+        "info": "",
+        "x": 155.99971389770508,
+        "y": 452.5998954772949,
+        "wires": []
+    },
+    {
+        "id": "9a077c04.199f4",
+        "type": "comment",
+        "z": "c67ac5b5.234ba8",
+        "name": "Comprobación JWT",
+        "info": "",
+        "x": 750,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "a13f9416.4651e8",
+        "type": "ui_gauge",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "group": "8c7e97b.c202168",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura (ªC)",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 550,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "489e9e6a.2cb36",
+        "type": "ui_gauge",
+        "z": "c67ac5b5.234ba8",
+        "name": "",
+        "group": "8c7e97b.c202168",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Humedad (%)",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 540,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "b457b295.d72bc",
+        "type": "comment",
+        "z": "c67ac5b5.234ba8",
+        "name": "Si es correcto, se procesan los datos",
+        "info": "",
+        "x": 1020,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "de9ae7a8.605698",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "mqtt.flespi.io",
+        "port": "8883",
+        "tls": "63741ff1.e7999",
+        "clientid": "",
+        "usetls": true,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "8c7e97b.c202168",
+        "type": "ui_group",
+        "z": "",
+        "name": "DHT11",
+        "tab": "203368e9.454988",
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "63741ff1.e7999",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "client.cert.pem",
+        "keyname": "device.key.pem",
+        "caname": "ca.cert.pem",
+        "servername": "",
+        "verifyservercert": false
+    },
+    {
+        "id": "203368e9.454988",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Ejercicio grupo 2",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
