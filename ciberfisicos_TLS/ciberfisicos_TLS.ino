@@ -1,12 +1,14 @@
 #include <WiFi.h>
-#include "src/dependencies/WiFiClientSecure/WiFiClientSecure.h" //using older WiFiClientSecure
 #include <time.h>
 #include <PubSubClient.h>
 #include "secrets.h"
+#include <HTTPClient.h>
 
 const char MQTT_SUB_TOPIC[] = "temperatures";
 const char MQTT_PUB_TOPIC[] = "temperatures";
-
+char cadena[64];
+int distancia = 0;
+String tokenString = "";
 WiFiClientSecure net;
 PubSubClient client(net);
 
@@ -18,8 +20,8 @@ void mqtt_connect()
     while (!client.connected()) {
     Serial.print("Time:");
     Serial.print(ctime(&now));
-    Serial.print("MQTT connecting");
-    if (client.connect(HOSTNAME, MQTT_USER, MQTT_PASS)) {
+    Serial.print("MQTT connecting ");
+    if (client.connect(HOSTNAME, MQTT_USER, tokenString.c_str())) {
       Serial.println("connected");
       client.subscribe(MQTT_SUB_TOPIC);
     } else {
@@ -40,6 +42,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
   }
+  Serial.println("");
 }
 
 void setup()
@@ -57,6 +60,10 @@ void setup()
     Serial.print(".");
     delay(1000);
   }
+
+  
+  tokenString = request_token();
+  tokenString = tokenString.substring(1,tokenString.length()-1);
   Serial.println();
   Serial.print("Connected to ");
   Serial.println(ssid);
@@ -84,7 +91,36 @@ void setup()
   client.setCallback(receivedCallback);
   mqtt_connect();
 }
+int random_distance(){
+  int distancia = random(0,15);
+  return distancia;
+  }
 
+String request_token(){
+   HTTPClient http;   
+   String response = "";
+   http.begin("http://192.168.1.101:3000/login");  //Specify destination for HTTP request
+   http.addHeader("Content-Type", "application/json");             //Specify content-type header
+  
+   int httpResponseCode = http.POST("{\"email\": \"esp32@correo.com\", \"password\": \"esp32pass\"}");   //Send the actual POST request
+  
+   if(httpResponseCode>0){
+  
+    response = http.getString();                       //Get the response to the request
+    Serial.println(httpResponseCode);   //Print return code
+    Serial.println(response);           //Print request answer
+  
+   }else{
+  
+    Serial.print("Error on sending POST: ");
+    Serial.println(httpResponseCode);
+  
+   }
+  
+   http.end();  //Free resources
+
+   return response;
+  }
 void loop()
 {
   now = time(nullptr);
@@ -113,6 +149,8 @@ void loop()
 
   if (millis() - lastMillis > 5000) {
     lastMillis = millis();
-    client.publish(MQTT_PUB_TOPIC, "Hola", false);
+    distancia = random_distance();
+    snprintf(cadena,64,"%d",distancia);
+    client.publish(MQTT_PUB_TOPIC, cadena, false);
   }
 }

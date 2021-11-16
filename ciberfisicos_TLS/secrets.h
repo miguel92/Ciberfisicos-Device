@@ -19,7 +19,7 @@
 
   const char *MQTT_HOST = "192.168.1.101";
   const int MQTT_PORT = 8883;
-  const char *MQTT_USER = ""; // leave blank if no credentials used
+  const char *MQTT_USER = "esp32"; // leave blank if no credentials used
   const char *MQTT_PASS = ""; // leave blank if no credentials used
 
 const char* local_root_ca =
