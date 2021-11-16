@@ -4,8 +4,8 @@
 #include "secrets.h"
 #include <HTTPClient.h>
 
-const char MQTT_SUB_TOPIC[] = "temperatures";
-const char MQTT_PUB_TOPIC[] = "temperatures";
+const char MQTT_SUB_TOPIC[] = "distancias";
+const char MQTT_PUB_TOPIC[] = "distancias";
 char cadena[64];
 int distancia = 0;
 String tokenString = "";
@@ -92,7 +92,7 @@ void setup()
   mqtt_connect();
 }
 int random_distance(){
-  int distancia = random(0,15);
+  int distancia = random(0,30);
   return distancia;
   }
 
