@@ -10,6 +10,7 @@ char cadena[64];
 int distancia = 0;
 String tokenString = "";
 WiFiClientSecure net;
+WiFiClientSecure net2;
 PubSubClient client(net);
 
 time_t now;
@@ -60,30 +61,23 @@ void setup()
     Serial.print(".");
     delay(1000);
   }
-
-  
-  tokenString = request_token();
-  tokenString = tokenString.substring(1,tokenString.length()-1);
   Serial.println();
   Serial.print("Connected to ");
   Serial.println(ssid);
+  
+  net2.setCACert(jwt_root_ca);
 
-  //Bloque para obtener la hora de un servidor
-  /*
-  Serial.print("Setting time using SNTP");
-  configTime(+1 * 3600, 0, "pool.ntp.org", "time.nist.gov");
-  now = time(nullptr);
-  while (now < 1510592825) {
-    delay(500);
-    Serial.print(".");
-    now = time(nullptr);
-  }
-  Serial.println("");
-  struct tm timeinfo;
-  gmtime_r(&now, &timeinfo);
-  Serial.print("Current time: ");
-  Serial.print(asctime(&timeinfo));
-  */
+  if(!net2.connect(jwt_IP,60000)){
+      char err_buf[100];
+      if(net2.lastError(err_buf,100)<0){
+        Serial.println("Last WifiSecureClient Error: ");
+        Serial.println(err_buf);
+        }
+    }else{
+      Serial.println("Conectado al server JWT");
+      tokenString = request_token();
+      }
+  
   net.setCACert(local_root_ca);
   //net.setCertificate(ESP_CA_cert);
   //net.setPrivateKey(ESP_RSA_key);
@@ -97,28 +91,15 @@ int random_distance(){
   }
 
 String request_token(){
-   HTTPClient http;   
-   String response = "";
-   http.begin("http://192.168.1.101:3000/login");  //Specify destination for HTTP request
-   http.addHeader("Content-Type", "application/json");             //Specify content-type header
-  
-   int httpResponseCode = http.POST("{\"email\": \"esp32@correo.com\", \"password\": \"esp32pass\"}");   //Send the actual POST request
-  
-   if(httpResponseCode>0){
-  
-    response = http.getString();                       //Get the response to the request
-    Serial.println(httpResponseCode);   //Print return code
-    Serial.println(response);           //Print request answer
-  
-   }else{
-  
-    Serial.print("Error on sending POST: ");
-    Serial.println(httpResponseCode);
-  
-   }
-  
-   http.end();  //Free resources
-
+  String response = "";
+  String request = "{\"email\": \"esp32@correo.com\", \"password\": \"esp32pass\"}";
+  net2.print(request.c_str());
+  while (net2.connected() || net2.available()) {
+      if (net2.available()) {
+        response = net2.readStringUntil('\n');
+        net2.stop();
+      }
+    }
    return response;
   }
 void loop()
