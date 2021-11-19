@@ -15,7 +15,7 @@
 <ul>
   <li><b>NodeRed UI:</b> En ella se guarda el código del dashboard.</li>
   <li><b>ciberfisicos_TLS:</b> En ella se guarda el código de la ESP-32.</li>
-  <li><b>server_jwt:</b> En ella se guarda el código de la API REST que proporciona el JWT firmado.</b></li>
+  <li><b>server_jwt:</b> En ella se guarda el código de la API REST que proporciona el JWT firmado y los certificados necesarios para aplicar el TLS en esta comunicación.</b></li>
   <li><b>Ficheros conf:</b> Incluye los archivos de configuración del EMQX que tenemos configurados nosotros para el correcto funcionamiento.</b></li>
   <li><b>Certs emqx:</b> Certificados usados para aplicar TLS en la co,unicación MQTT.</b></li>
 </ul>
